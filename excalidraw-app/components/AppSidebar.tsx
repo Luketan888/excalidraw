@@ -95,12 +95,8 @@ export const AppSidebar = () => {
               opacity: 0.9,
             }}
           />
-          <SidebarPromoCopy text="Make comments with Excalidraw+" />
-          <LinkButton
-            href={`${
-              import.meta.env.VITE_APP_PLUS_LP
-            }/plus?utm_source=excalidraw&utm_medium=app&utm_content=comments_promo#excalidraw-redirect`}
-          >
+          <SidebarPromoCopy text="Make comments with BraisedEgg" />
+          <LinkButton href="https://braisedegg.com">
             Sign up now
           </LinkButton>
         </div>
@@ -116,12 +112,8 @@ export const AppSidebar = () => {
               opacity: 0.7,
             }}
           />
-          <SidebarPromoCopy text="Create presentation with Excalidraw+" />
-          <LinkButton
-            href={`${
-              import.meta.env.VITE_APP_PLUS_LP
-            }/plus?utm_source=excalidraw&utm_medium=app&utm_content=presentations_promo#excalidraw-redirect`}
-          >
+          <SidebarPromoCopy text="Create presentation with BraisedEgg" />
+          <LinkButton href="https://braisedegg.com">
             Sign up now
           </LinkButton>
         </div>

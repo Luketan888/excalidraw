@@ -67,7 +67,7 @@
     "arrowtype_elbowed": "سهم زاوي",
     "fontSize": "حجم الخط",
     "fontFamily": "نوع الخط",
-    "addWatermark": "إضافة \"مصنوعة بواسطة Excalidraw\"",
+    "addWatermark": "إضافة \"مصنوعة بواسطة Drawthing by BraisedEgg\"",
     "handDrawn": "رسم باليد",
     "normal": "عادي",
     "code": "رمز",
@@ -102,7 +102,7 @@
     "untitled": "غير معنون",
     "name": "الاسم",
     "yourName": "اسمك",
-    "madeWithExcalidraw": "مصنوعة بواسطة Excalidraw",
+    "madeWithExcalidraw": "مصنوعة بواسطة Drawthing by BraisedEgg",
     "group": "تحديد مجموعة",
     "ungroup": "إلغاء تحديد مجموعة",
     "collaborators": "المتعاونون",
@@ -174,7 +174,7 @@
     "zoomToFitViewport": "التكبير لتناسب العرض",
     "zoomToFitSelection": "تكبير للعنصر المحدد",
     "zoomToFit": "تكبير لتلائم جميع العناصر",
-    "installPWA": "تثبيت Excalidraw محليًا (PWA)",
+    "installPWA": "تثبيت Drawthing by BraisedEgg محليًا (PWA)",
     "autoResize": "تمكين تغيير حجم النص تلقائيًا",
     "imageCropping": "قص الصورة",
     "unCroppedDimension": "الأبعاد غير المقصوصة",
@@ -263,7 +263,7 @@
     "cannotExportEmptyCanvas": "لا يمكن تصدير لوحة فارغة.",
     "couldNotCopyToClipboard": "تعذر النسخ إلى الحافظة.",
     "decryptFailed": "تعذر فك تشفير البيانات.",
-    "uploadedSecurly": "تم تأمين التحميل بتشفير النهاية إلى النهاية، مما يعني أن خادم Excalidraw والأطراف الثالثة لا يمكنها قراءة المحتوى.",
+    "uploadedSecurly": "تم تأمين التحميل بتشفير النهاية إلى النهاية، مما يعني أن خادم Drawthing by BraisedEgg والأطراف الثالثة لا يمكنها قراءة المحتوى.",
     "loadSceneOverridePrompt": "تحميل الرسم الخارجي سيحل محل المحتوى الموجود لديك. هل ترغب في المتابعة؟",
     "collabStopOverridePrompt": "إيقاف الجلسة سيؤدي إلى الكتابة فوق رسومك السابقة المخزنة داخليًا. هل أنت متأكد؟\n\n(إذا كنت ترغب في الاحتفاظ برسمك المخزن داخليًا، أغلق علامة تبويب المتصفح بدلاً من ذلك.)",
     "errorAddingToLibrary": "تعذر إضافة العنصر إلى المكتبة",
@@ -271,7 +271,7 @@
     "confirmAddLibrary": "هذا سيضيف {{numShapes}} شكل إلى مكتبتك. هل أنت متأكد؟",
     "imageDoesNotContainScene": "يبدو أن هذه الصورة لا تحتوي على أي بيانات مشهد. هل قمت بتمكين تضمين المشهد أثناء التصدير؟",
     "cannotRestoreFromImage": "تعذر استعادة المشهد من ملف الصورة",
-    "invalidSceneUrl": "تعذر استيراد المشهد من عنوان URL المتوفر. إما أنها مشوهة، أو لا تحتوي على بيانات Excalidraw JSON صالحة.",
+    "invalidSceneUrl": "تعذر استيراد المشهد من عنوان URL المتوفر. إما أنها مشوهة، أو لا تحتوي على بيانات Drawthing by BraisedEgg JSON صالحة.",
     "resetLibrary": "هذا سيؤدي إلى مسح مكتبتك. هل أنت متأكد؟",
     "removeItemsFromsLibrary": "حذف {{count}} عنصر (عناصر) من المكتبة؟",
     "invalidEncryptionKey": "مفتاح التشفير يجب أن يكون من 22 حرفًا. التعاون المباشر معطل.",
@@ -327,7 +327,7 @@
     "laser": "مؤشر ليزر",
     "hand": "يد (أداة الإزاحة)",
     "extraTools": "المزيد من الأدوات",
-    "mermaidToExcalidraw": "من Mermaid إلى Excalidraw",
+    "mermaidToExcalidraw": "من Mermaid إلى Drawthing by BraisedEgg",
     "convertElementType": ""
   },
   "element": {
@@ -405,7 +405,7 @@
     "desc_inProgressIntro": "تجري الآن جلسة تعاون مباشرة.",
     "desc_shareLink": "شارك هذا الرابط مع أي شخص تريده أن يشاركك الجلسة:",
     "desc_exitSession": "إيقاف الجلسة سيؤدي إلى قطع الاتصال الخاص بك من الغرفة، ولكن ستتمكن من مواصلة العمل مع المشهد محليًا. لاحظ أن هذا لن يؤثر على الأشخاص الآخرين، وسيظلون قادرين على التعاون في إصدارهم.",
-    "shareTitle": "الانضمام إلى جلسة تعاون مباشرة على Excalidraw"
+    "shareTitle": "الانضمام إلى جلسة تعاون مباشرة على Drawthing by BraisedEgg"
   },
   "errorDialog": {
     "title": "خطأ"
@@ -421,9 +421,9 @@
     "link_title": "رابط قابل للمشاركة",
     "link_details": "تصدير الملف للمشاهدة فقط.",
     "link_button": "تصدير كرابط",
-    "excalidrawplus_description": "حفظ المشهد إلى مساحة العمل +Excalidraw الخاصة بك.",
+    "excalidrawplus_description": "حفظ المشهد إلى مساحة العمل +Drawthing by BraisedEgg الخاصة بك.",
     "excalidrawplus_button": "تصدير",
-    "excalidrawplus_exportError": "تعذر التص несп في الوقت الحالي إلى +Excalidraw..."
+    "excalidrawplus_exportError": "تعذر التص несп في الوقت الحالي إلى +Drawthing by BraisedEgg..."
   },
   "helpDialog": {
     "blog": "اقرأ مدونتنا",
@@ -522,8 +522,8 @@
     }
   },
   "encrypted": {
-    "tooltip": "رسوماتك مشفرة من النهاية إلى النهاية، لذا لا يمكن لخوادم Excalidraw رؤيتها أبدًا.",
-    "link": "مشاركة المدونة حول التشفير من النهاية إلى النهاية في Excalidraw"
+    "tooltip": "رسوماتك مشفرة من النهاية إلى النهاية، لذا لا يمكن لخوادم Drawthing by BraisedEgg رؤيتها أبدًا.",
+    "link": "مشاركة المدونة حول التشفير من النهاية إلى النهاية في Drawthing by BraisedEgg"
   },
   "stats": {
     "angle": "الزاوية",
@@ -579,7 +579,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "هل تريد الانتقال إلى Excalidraw+ بدلاً من ذلك؟",
+      "center_heading_plus": "هل تريد الانتقال إلى BraisedEgg بدلاً من ذلك؟",
       "menuHint": "التصدير، التفضيلات، اللغات..."
     },
     "defaults": {
@@ -610,9 +610,9 @@
         "description": "تصدير بيانات المشهد إلى ملف يمكنك الاستيراد منه لاحقًا."
       },
       "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "تصدير إلى Excalidraw+",
-        "description": "حفظ المشهد إلى مساحة العمل +Excalidraw الخاصة بك."
+        "title": "BraisedEgg",
+        "button": "تصدير إلى BraisedEgg",
+        "description": "حفظ المشهد إلى مساحة العمل +Drawthing by BraisedEgg الخاصة بك."
       }
     },
     "modal": {
@@ -629,7 +629,7 @@
     }
   },
   "mermaid": {
-    "title": "Mermaid إلى Excalidraw",
+    "title": "Mermaid إلى Drawthing by BraisedEgg",
     "button": "إدراج",
     "description": "",
     "syntax": "صيغة Mermaid",

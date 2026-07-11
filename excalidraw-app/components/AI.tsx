@@ -82,9 +82,7 @@ export const AIComponents = ({
                   <div style="color:red">Too many requests today,</br>please try again tomorrow!</div>
                   </br>
                   </br>
-                  <div>You can also try <a href="${
-                    import.meta.env.VITE_APP_PLUS_LP
-                  }/plus?utm_source=excalidraw&utm_medium=app&utm_content=d2c" target="_blank" rel="noopener">Excalidraw+</a> to get more requests.</div>
+                  <div>You can also try <a href="https://braisedegg.com" target="_blank" rel="noopener">BraisedEgg</a> to get more requests.</div>
                 </div>
                 </body>
                 </html>`,

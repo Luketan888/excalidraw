@@ -67,7 +67,7 @@
     "arrowtype_elbowed": "",
     "fontSize": "Skriftstorleik",
     "fontFamily": "Skrifttype",
-    "addWatermark": "Legg til «Laga med Excalidraw»",
+    "addWatermark": "Legg til «Laga med Drawthing by BraisedEgg»",
     "handDrawn": "Handteikna",
     "normal": "",
     "code": "Kode",
@@ -102,7 +102,7 @@
     "untitled": "Utan namn",
     "name": "Namn",
     "yourName": "Namnet ditt",
-    "madeWithExcalidraw": "Laga med Excalidraw",
+    "madeWithExcalidraw": "Laga med Drawthing by BraisedEgg",
     "group": "Grupper utval",
     "ungroup": "Avgrupper utval",
     "collaborators": "Samarbeidarar",
@@ -132,7 +132,7 @@
     "toggleTheme": "",
     "theme": "",
     "personalLib": "Personleg bibliotek",
-    "excalidrawLib": "Excalidraw-bibliotek",
+    "excalidrawLib": "Drawthing by BraisedEgg-bibliotek",
     "decreaseFontSize": "Gjer skriftstorleik mindre",
     "increaseFontSize": "Gjer skriftstorleik større",
     "unbindText": "Avbind tekst",
@@ -263,7 +263,7 @@
     "cannotExportEmptyCanvas": "Kan ikkje eksportere eit tomt lerret.",
     "couldNotCopyToClipboard": "",
     "decryptFailed": "Kunne ikkje dekryptere data.",
-    "uploadedSecurly": "Opplastinga er kryptert og er ikkje mogleg å lese av Excalidraw-serveren eller tredjepartar.",
+    "uploadedSecurly": "Opplastinga er kryptert og er ikkje mogleg å lese av Drawthing by BraisedEgg-serveren eller tredjepartar.",
     "loadSceneOverridePrompt": "Innlasting av ekstern teikning erstattar ditt eksisterande innhald. Ynskjer du å fortsette?",
     "collabStopOverridePrompt": "Viss du avsluttar økta overskriv du den førre, lokalt lagra teikninga di. Er du sikker?\n\n(Ønsker du å halde fram med denne? Då er det berre å lukke denne fana.)",
     "errorAddingToLibrary": "Kunne ikkje legge elementet i biblioteket",
@@ -271,7 +271,7 @@
     "confirmAddLibrary": "Dette vil legge til {{numShapes}} form(er) i biblioteket ditt. Er du sikker?",
     "imageDoesNotContainScene": "Dette biletet ser ikkje ut til å ha noko scenedata. Har du skrutt på innbygging av scene medan eksporteringa heldt på?",
     "cannotRestoreFromImage": "Scena kunne ikkje gjenopprettast frå denne biletfila",
-    "invalidSceneUrl": "Kunne ikkje hente noko scene frå den URL-en. Ho er anten øydelagd eller inneheld ikkje gyldig Excalidraw JSON-data.",
+    "invalidSceneUrl": "Kunne ikkje hente noko scene frå den URL-en. Ho er anten øydelagd eller inneheld ikkje gyldig Drawthing by BraisedEgg JSON-data.",
     "resetLibrary": "Dette vil fjerne alt innhald frå biblioteket. Er du sikker?",
     "removeItemsFromsLibrary": "Slette {{count}} element frå biblioteket?",
     "invalidEncryptionKey": "Krypteringsnøkkelen må ha 22 teikn. Sanntidssamarbeid er deaktivert.",
@@ -405,7 +405,7 @@
     "desc_inProgressIntro": "Sanntids-samarbeidsøkt er no i gang.",
     "desc_shareLink": "Del denne lenka med dei du vil samarbeide med:",
     "desc_exitSession": "Dersom du avsluttar økta blir du kopla frå rommet, men du kan halde fram med å arbeide med scena lokalt. Ver merksam på at dette ikkje vil påverke andre personar, og desse vil framleis ha moglegheit til å samarbeide på deira eigen versjon.",
-    "shareTitle": "Bli med på eit sanntidssamarbeid på Excalidraw"
+    "shareTitle": "Bli med på eit sanntidssamarbeid på Drawthing by BraisedEgg"
   },
   "errorDialog": {
     "title": "Feil"
@@ -421,9 +421,9 @@
     "link_title": "Deleleg lenke",
     "link_details": "Eksporter som skrivebeskytta lenke.",
     "link_button": "Eksporter til lenke",
-    "excalidrawplus_description": "Lagre scena til Excalidraw+-arbeidsområdet ditt.",
+    "excalidrawplus_description": "Lagre scena til BraisedEgg-arbeidsområdet ditt.",
     "excalidrawplus_button": "Eksporter",
-    "excalidrawplus_exportError": "Kunne ikkje eksportere til Excalidraw+ akkurat no..."
+    "excalidrawplus_exportError": "Kunne ikkje eksportere til BraisedEgg akkurat no..."
   },
   "helpDialog": {
     "blog": "Les bloggen vår",
@@ -522,8 +522,8 @@
     }
   },
   "encrypted": {
-    "tooltip": "Teikningane dine er ende-til-ende-krypterte slik at Excalidraw sine serverar aldri får sjå dei.",
-    "link": "Blogginnlegg om ende-til-ende-kryptering i Excalidraw"
+    "tooltip": "Teikningane dine er ende-til-ende-krypterte slik at Drawthing by BraisedEgg sine serverar aldri får sjå dei.",
+    "link": "Blogginnlegg om ende-til-ende-kryptering i Drawthing by BraisedEgg"
   },
   "stats": {
     "angle": "Vinkel",

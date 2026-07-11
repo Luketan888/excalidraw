@@ -144,7 +144,6 @@ import { ExcalidrawPlusIframeExport } from "./ExcalidrawPlusIframeExport";
 
 import "./index.scss";
 
-import { ExcalidrawPlusPromoBanner } from "./components/ExcalidrawPlusPromoBanner";
 import { AppSidebar } from "./components/AppSidebar";
 
 import type { CollabAPI } from "./collab/Collab";
@@ -862,18 +861,13 @@ const ExcalidrawWrapper = () => {
   }
 
   const ExcalidrawPlusCommand = {
-    label: "Excalidraw+",
+    label: "BraisedEgg",
     category: DEFAULT_CATEGORIES.links,
     predicate: true,
     icon: <div style={{ width: 14 }}>{ExcalLogo}</div>,
     keywords: ["plus", "cloud", "server"],
     perform: () => {
-      window.open(
-        `${
-          import.meta.env.VITE_APP_PLUS_LP
-        }/plus?utm_source=excalidraw&utm_medium=app&utm_content=command_palette`,
-        "_blank",
-      );
+      window.open("https://braisedegg.com", "_blank");
     },
   };
   const ExcalidrawPlusAppCommand = {
@@ -959,12 +953,6 @@ const ExcalidrawWrapper = () => {
 
           return (
             <div className="excalidraw-ui-top-right">
-              {excalidrawAPI?.getEditorInterface().formFactor === "desktop" && (
-                <ExcalidrawPlusPromoBanner
-                  isSignedIn={isExcalidrawPlusSignedUser}
-                />
-              )}
-
               {collabError.message && <CollabError collabError={collabError} />}
               <LiveCollaborationTrigger
                 isCollaborating={isCollaborating}
@@ -1210,7 +1198,7 @@ const ExcalidrawWrapper = () => {
               ? [
                   {
                     ...ExcalidrawPlusAppCommand,
-                    label: "Sign in / Go to Excalidraw+",
+                    label: "Sign in / Go to BraisedEgg",
                   },
                 ]
               : [ExcalidrawPlusCommand, ExcalidrawPlusAppCommand]),

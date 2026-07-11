@@ -67,7 +67,7 @@
     "arrowtype_elbowed": "پیکان گوشه‌دار",
     "fontSize": "اندازه قلم",
     "fontFamily": "نوع قلم",
-    "addWatermark": "\"ساخته شده با Excalidraw\" را اضافه کن",
+    "addWatermark": "\"ساخته شده با Drawthing by BraisedEgg\" را اضافه کن",
     "handDrawn": "دست‌نویس",
     "normal": "عادی",
     "code": "کد",
@@ -102,7 +102,7 @@
     "untitled": "بدون عنوان",
     "name": "نام",
     "yourName": "نام شما",
-    "madeWithExcalidraw": "ساخته شده با Excalidraw",
+    "madeWithExcalidraw": "ساخته شده با Drawthing by BraisedEgg",
     "group": "گروهبندی انتخابها",
     "ungroup": "حذف گروهبندی انتخابها",
     "collaborators": "همکاران",
@@ -132,7 +132,7 @@
     "toggleTheme": "تغییر وضعیت پوسته روشن/تیره",
     "theme": "پوسته",
     "personalLib": "کتابخانه شخصی",
-    "excalidrawLib": "کتابخانه Excalidraw",
+    "excalidrawLib": "کتابخانه Drawthing by BraisedEgg",
     "decreaseFontSize": "کاهش اندازه فونت",
     "increaseFontSize": "افزایش دادن اندازه فونت",
     "unbindText": "بازکردن نوشته",
@@ -174,7 +174,7 @@
     "zoomToFitViewport": "بزرگنمایی به اندازه نمایشگر",
     "zoomToFitSelection": "بزرگنمایی به اندازه قسمت انتخاب شده",
     "zoomToFit": "بزرگنمایی برای دیدن تمام آیتم ها",
-    "installPWA": "نصب Excalidraw روی دستگاه (PWA)",
+    "installPWA": "نصب Drawthing by BraisedEgg روی دستگاه (PWA)",
     "autoResize": "فعالسازی تنظیم خودکار سایز",
     "imageCropping": "برش عکس",
     "unCroppedDimension": "اندازه غیر برشی",
@@ -263,7 +263,7 @@
     "cannotExportEmptyCanvas": "بوم خالی قابل تبدیل نیست.",
     "couldNotCopyToClipboard": "در بریده‌دان رونویسی نشد.",
     "decryptFailed": "رمزگشایی داده ها امکان‌پذیر نیست.",
-    "uploadedSecurly": "آپلود با رمزگذاری دو طرفه انجام میشود، به این معنی که سرور Excalidraw و اشخاص ثالث نمی توانند مطالب شما را بخوانند.",
+    "uploadedSecurly": "آپلود با رمزگذاری دو طرفه انجام میشود، به این معنی که سرور Drawthing by BraisedEgg و اشخاص ثالث نمی توانند مطالب شما را بخوانند.",
     "loadSceneOverridePrompt": "بارگزاری یک طرح خارجی محتوای فعلی رو از بین میبرد. آیا میخواهید ادامه دهید؟",
     "collabStopOverridePrompt": "با توقف بوم نقاشی، نقشه قبلی و ذخیره شده محلی شما را بازنویسی می کند. مطمئنی؟\n\n(اگر می خواهید نقاشی محلی خود را حفظ کنید، به سادگی برگه مرورگر را ببندید.)",
     "errorAddingToLibrary": "مورد به کتابخانه اضافه نشد",
@@ -271,7 +271,7 @@
     "confirmAddLibrary": "{{numShapes}} از اشکال به کتابخانه شما اضافه خواهد شد. مطمئن هستید؟",
     "imageDoesNotContainScene": "به نظر نمی رسد این تصویر حاوی داده های بوم نقاشی باشد. آیا جاسازی صحنه را در حین خروجی فعال کرده اید?",
     "cannotRestoreFromImage": "صحنه را نمی توان از این فایل تصویری بازیابی کرد",
-    "invalidSceneUrl": "بوم نقاشی از آدرس ارائه شده وارد نشد. این یا نادرست است، یا حاوی داده Excalidraw JSON معتبر نیست.",
+    "invalidSceneUrl": "بوم نقاشی از آدرس ارائه شده وارد نشد. این یا نادرست است، یا حاوی داده Drawthing by BraisedEgg JSON معتبر نیست.",
     "resetLibrary": "ین کار کل صفحه را پاک میکند. آیا مطمئنید?",
     "removeItemsFromsLibrary": "حذف {{count}} آیتم(ها) از کتابخانه?",
     "invalidEncryptionKey": "کلید رمزگذاری باید 22 کاراکتر باشد. همکاری زنده غیرفعال است.",
@@ -405,7 +405,7 @@
     "desc_inProgressIntro": "جلسه همکاری آنلاین در حال انجام است.",
     "desc_shareLink": "این لینک را با هر کسی که می خواهید با او همکاری کنید به اشتراک بگذارید:",
     "desc_exitSession": "با پایان دادن جلسه، شما از اتاق حذف میکند، اما می توانید به صورت محلی کار خود را با بوم ادامه دهید. توجه داشته باشید که این مورد بر سایر افراد تأثیر نمی گذارد و همچنان می توانند در نسخه خود همکاری کنند.",
-    "shareTitle": "به یک جلسه همکاری زنده در Excalidraw بپیوندید"
+    "shareTitle": "به یک جلسه همکاری زنده در Drawthing by BraisedEgg بپیوندید"
   },
   "errorDialog": {
     "title": "خطا"
@@ -421,9 +421,9 @@
     "link_title": "لینک قابل اشتراک‌گذاری",
     "link_details": "خروجی به عنوان یک پیوند فقط خواندنی.",
     "link_button": "خروجی در فایل",
-    "excalidrawplus_description": "صحنه را در فضای کاری Excalidraw+ خود ذخیره کنید.",
+    "excalidrawplus_description": "صحنه را در فضای کاری BraisedEgg خود ذخیره کنید.",
     "excalidrawplus_button": "خروجی گرفتن",
-    "excalidrawplus_exportError": "در حال حاضر نمی‌توان به Excalidraw+ صادر کرد..."
+    "excalidrawplus_exportError": "در حال حاضر نمی‌توان به BraisedEgg صادر کرد..."
   },
   "helpDialog": {
     "blog": "بلاگ ما را بخوانید",
@@ -522,8 +522,8 @@
     }
   },
   "encrypted": {
-    "tooltip": "شما در یک محیط رمزگزاری شده دو طرفه در حال طراحی هستید پس Excalidraw هرگز طرح های شما را نمیبند.",
-    "link": "پست وبلاگ در مورد رمزگذاری سرتاسر در Excalidraw"
+    "tooltip": "شما در یک محیط رمزگزاری شده دو طرفه در حال طراحی هستید پس Drawthing by BraisedEgg هرگز طرح های شما را نمیبند.",
+    "link": "پست وبلاگ در مورد رمزگذاری سرتاسر در Drawthing by BraisedEgg"
   },
   "stats": {
     "angle": "زاویه",
@@ -579,7 +579,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "آیا می‌خواهید به جای آن به Excalidraw+ بروید؟",
+      "center_heading_plus": "آیا می‌خواهید به جای آن به BraisedEgg بروید؟",
       "menuHint": "خروجی، ترجیحات، زبان ها، ..."
     },
     "defaults": {
@@ -610,9 +610,9 @@
         "description": "خروجی از داده های صحنه را به عنوان فایل که بعدا می توانید بیافزایید."
       },
       "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "خروجی به Excalidraw+",
-        "description": "ذخیره صفحه در میز کار Excalidraw+."
+        "title": "BraisedEgg",
+        "button": "خروجی به BraisedEgg",
+        "description": "ذخیره صفحه در میز کار BraisedEgg."
       }
     },
     "modal": {

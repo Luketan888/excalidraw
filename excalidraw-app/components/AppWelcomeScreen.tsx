@@ -15,18 +15,16 @@ export const AppWelcomeScreen: React.FC<{
 
   if (isExcalidrawPlusSignedUser) {
     headingContent = t("welcomeScreen.app.center_heading_plus")
-      .split(/(Excalidraw\+)/)
+      .split(/(BraisedEgg)/)
       .map((bit, idx) => {
-        if (bit === "Excalidraw+") {
+        if (bit === "BraisedEgg") {
           return (
             <a
               style={{ pointerEvents: POINTER_EVENTS.inheritFromUI }}
-              href={`${
-                import.meta.env.VITE_APP_PLUS_APP
-              }?utm_source=excalidraw&utm_medium=app&utm_content=welcomeScreenSignedInUser`}
+              href="https://braisedegg.com"
               key={idx}
             >
-              Excalidraw+
+              BraisedEgg
             </a>
           );
         }
@@ -52,7 +50,9 @@ export const AppWelcomeScreen: React.FC<{
       <WelcomeScreen.Hints.ToolbarHint />
       <WelcomeScreen.Hints.HelpHint />
       <WelcomeScreen.Center>
-        <WelcomeScreen.Center.Logo />
+        <WelcomeScreen.Center.Logo>
+          Drawthing by BraisedEgg
+        </WelcomeScreen.Center.Logo>
         <WelcomeScreen.Center.Heading>
           {headingContent}
         </WelcomeScreen.Center.Heading>
