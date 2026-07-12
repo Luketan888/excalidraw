@@ -80,16 +80,16 @@
   --space-factor: 0.25rem;
   --text-primary-color: var(--color-on-surface);
 
-  --color-selection: #6965db;
+  --color-selection: #e07b1e;
 
   --color-icon-white: #fff;
 
-  --color-primary: #6965db;
-  --color-primary-darker: #5b57d1;
-  --color-primary-darkest: #4a47b1;
-  --color-primary-light: #e3e2fe;
-  --color-primary-light-darker: #d7d5ff;
-  --color-primary-hover: #5753d0;
+  --color-primary: #e07b1e;
+  --color-primary-darker: #c86915;
+  --color-primary-darkest: #a8560c;
+  --color-primary-light: #fcebd8;
+  --color-primary-light-darker: #f8d8b5;
+  --color-primary-hover: #d26e16;
 
   --color-gray-10: #f5f5f5;
   --color-gray-20: #ebebeb;
@@ -226,16 +226,16 @@
     --color-slider-track: hsl(244, 23%, 39%);
 
     // will be inverted to a lighter color.
-    --color-selection: #3530c4;
+    --color-selection: #c86915;
 
     --color-icon-white: var(--color-gray-90);
 
-    --color-primary: #a8a5ff;
-    --color-primary-darker: #b2aeff;
-    --color-primary-darkest: #beb9ff;
-    --color-primary-light: #4f4d6f;
-    --color-primary-light-darker: #43415e;
-    --color-primary-hover: #bbb8ff;
+    --color-primary: #f0a24e;
+    --color-primary-darker: #f2ae63;
+    --color-primary-darkest: #f4ba78;
+    --color-primary-light: #4a3724;
+    --color-primary-light-darker: #3d2d1d;
+    --color-primary-hover: #f2ae63;
 
     --color-disabled: var(--color-gray-70);
 

@@ -285,10 +285,21 @@ export const exportToBackend = async (
       url.hash = `json=${json.id},${encryptionKey}`;
       const urlString = url.toString();
 
-      await saveFilesToFirebase({
-        prefix: `/files/shareLinks/${json.id}`,
-        files: filesToUpload,
-      });
+      try {
+        await saveFilesToFirebase({
+          prefix: `/files/shareLinks/${json.id}`,
+          files: filesToUpload,
+        });
+      } catch (uploadError) {
+        // File storage (Firebase) may be unavailable or reject uploads for a
+        // self-hosted deployment. The scene itself is already persisted via the
+        // backend, so we still return the shareable link — embedded images may
+        // simply not be included until a storage backend is configured.
+        console.warn(
+          "Could not upload files for share link; scene link still created.",
+          uploadError,
+        );
+      }
 
       return { url: urlString, errorMessage: null };
     } else if (json.error_class === "RequestTooLargeError") {

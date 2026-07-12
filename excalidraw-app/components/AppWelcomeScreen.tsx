@@ -33,11 +33,19 @@ export const AppWelcomeScreen: React.FC<{
   } else {
     headingContent = (
       <>
-        {t("welcomeScreen.app.center_heading")}
+        Sketch, diagram, and brainstorm with a hand-drawn feel — your ideas
+        stay right here in your browser until you save them.
         <br />
-        {t("welcomeScreen.app.center_heading_line2")}
-        <br />
-        {t("welcomeScreen.app.center_heading_line3")}
+        <span
+          style={{
+            display: "inline-block",
+            marginTop: "0.75rem",
+            fontSize: "0.8rem",
+            opacity: 0.55,
+          }}
+        >
+          Modified from Excalidraw
+        </span>
       </>
     );
   }
@@ -51,7 +59,19 @@ export const AppWelcomeScreen: React.FC<{
       <WelcomeScreen.Hints.HelpHint />
       <WelcomeScreen.Center>
         <WelcomeScreen.Center.Logo>
-          Drawthing by BraisedEgg
+          <span
+            style={{
+              background: "linear-gradient(90deg, #fbbf24 0%, #e07b1e 100%)",
+              WebkitBackgroundClip: "text",
+              backgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              color: "#e07b1e",
+              display: "inline-block",
+              fontWeight: 700,
+            }}
+          >
+            Drawthing by BraisedEgg
+          </span>
         </WelcomeScreen.Center.Logo>
         <WelcomeScreen.Center.Heading>
           {headingContent}
@@ -64,17 +84,13 @@ export const AppWelcomeScreen: React.FC<{
               onSelect={() => props.onCollabDialogOpen()}
             />
           )}
-          {!isExcalidrawPlusSignedUser && (
-            <WelcomeScreen.Center.MenuItemLink
-              href={`${
-                import.meta.env.VITE_APP_PLUS_LP
-              }/plus?utm_source=excalidraw&utm_medium=app&utm_content=welcomeScreenGuest`}
-              shortcut={null}
-              icon={loginIcon}
-            >
-              Sign up
-            </WelcomeScreen.Center.MenuItemLink>
-          )}
+          <WelcomeScreen.Center.MenuItemLink
+            href="https://braisedegg.com"
+            shortcut={null}
+            icon={loginIcon}
+          >
+            Discover our other projects
+          </WelcomeScreen.Center.MenuItemLink>
         </WelcomeScreen.Center.Menu>
       </WelcomeScreen.Center>
     </WelcomeScreen>

@@ -1,5 +1,4 @@
 import {
-  loginIcon,
   ExcalLogo,
   eyeIcon,
 } from "@excalidraw/excalidraw/components/icons";
@@ -11,7 +10,6 @@ import { isDevEnv } from "@excalidraw/common";
 import type { Theme } from "@excalidraw/element/types";
 
 import { LanguageList } from "../app-language/LanguageList";
-import { isExcalidrawPlusSignedUser } from "../app_constants";
 
 import { saveDebugState } from "./DebugCanvas";
 
@@ -45,16 +43,6 @@ export const AppMainMenu: React.FC<{
         className=""
       >
         BraisedEgg
-      </MainMenu.ItemLink>
-      <MainMenu.DefaultItems.Socials />
-      <MainMenu.ItemLink
-        icon={loginIcon}
-        href={`${import.meta.env.VITE_APP_PLUS_APP}${
-          isExcalidrawPlusSignedUser ? "" : "/sign-up"
-        }?utm_source=signin&utm_medium=app&utm_content=hamburger`}
-        className="highlighted"
-      >
-        {isExcalidrawPlusSignedUser ? "Sign in" : "Sign up"}
       </MainMenu.ItemLink>
       {isDevEnv() && (
         <MainMenu.Item
