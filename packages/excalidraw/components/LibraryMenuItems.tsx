@@ -91,25 +91,7 @@ export default function LibraryMenuItems({
     LibraryItem["id"] | null
   >(null);
 
-  const [searchInputValue, setSearchInputValue] = useState("");
-
   const IS_LIBRARY_EMPTY = !libraryItems.length && !pendingElements.length;
-
-  const IS_SEARCHING = !IS_LIBRARY_EMPTY && !!searchInputValue.trim();
-
-  const filteredItems = useMemo(() => {
-    const searchQuery = deburr(searchInputValue.trim().toLowerCase());
-    if (!searchQuery) {
-      return [];
-    }
-
-    return libraryItems.filter((item) => {
-      const itemName = item.name || "";
-      return (
-        itemName.trim() && deburr(itemName.toLowerCase()).includes(searchQuery)
-      );
-    });
-  }, [libraryItems, searchInputValue]);
 
   const unpublishedItems = useMemo(
     () => libraryItems.filter((item) => item.status !== "published"),
