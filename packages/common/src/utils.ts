@@ -251,7 +251,11 @@ export const updateActiveTool = (
         type: ToolType;
       }
     | { type: "custom"; customType: string }
-  ) & { locked?: boolean; fromSelection?: boolean }) & {
+  ) & {
+    locked?: boolean;
+    fromSelection?: boolean;
+    mode?: "object" | "partial";
+  }) & {
     lastActiveToolBeforeEraser?: ActiveTool | null;
   },
 ): AppState["activeTool"] => {
@@ -274,7 +278,8 @@ export const updateActiveTool = (
     customType: null,
     locked: data.locked ?? appState.activeTool.locked,
     fromSelection: data.fromSelection ?? false,
-  };
+    mode: data.mode ?? (appState.activeTool as { mode?: "object" | "partial" }).mode,
+  } as AppState["activeTool"];
 };
 
 export const isFullScreen = () =>

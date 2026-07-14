@@ -387,6 +387,71 @@ const LayerUI = ({
                               UIOptions={UIOptions}
                               app={app}
                             />
+                            {appState.activeTool.type === "eraser" && (
+                              <div
+                                className="eraser-options"
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: spacing.toolbarInnerRowGap,
+                                  marginLeft: spacing.toolbarInnerRowGap,
+                                }}
+                              >
+                                <div
+                                  className="eraser-mode-toggle"
+                                  style={{ display: "flex", gap: 2 }}
+                                >
+                                  <button
+                                    type="button"
+                                    title="Erase whole elements"
+                                    className={clsx("eraser-mode-btn", {
+                                      active:
+                                        appState.activeTool.mode !== "partial",
+                                    })}
+                                    onClick={() =>
+                                      app.setActiveTool({
+                                        type: "eraser",
+                                        mode: "object",
+                                      })
+                                    }
+                                  >
+                                    Object
+                                  </button>
+                                  <button
+                                    type="button"
+                                    title="Erase only the touched area (paint eraser)"
+                                    className={clsx("eraser-mode-btn", {
+                                      active:
+                                        appState.activeTool.mode === "partial",
+                                    })}
+                                    onClick={() =>
+                                      app.setActiveTool({
+                                        type: "eraser",
+                                        mode: "partial",
+                                      })
+                                    }
+                                  >
+                                    Partial
+                                  </button>
+                                </div>
+                                <input
+                                  type="range"
+                                  min={2}
+                                  max={100}
+                                  step={2}
+                                  value={appState.eraserBrushSize}
+                                  title="Brush size ( [ and ] to resize )"
+                                  onChange={(event) =>
+                                    setAppState({
+                                      eraserBrushSize: Number(event.target.value),
+                                    })
+                                  }
+                                />
+                                <span style={{ fontSize: 11, opacity: 0.7 }}>
+                                  {appState.eraserBrushSize}px
+                                </span>
+                              </div>
+                            )}
                           </Stack.Row>
                         </Island>
                         {isCollaborating && (

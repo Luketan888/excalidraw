@@ -40,7 +40,7 @@ export class AnimatedTrail implements Trail {
 
   constructor(
     protected app: App,
-    private options: Partial<LaserPointerOptions> &
+    protected options: Partial<LaserPointerOptions> &
       Partial<AnimatedTrailOptions>,
   ) {
     this.key = `animated-trail-${AnimatedTrail.counter++}`;

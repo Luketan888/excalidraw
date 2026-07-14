@@ -264,6 +264,14 @@ import {
   isNonDeletedElement,
 } from "@excalidraw/element";
 
+import {
+  getEraserPoints,
+  getVectorErasedElements,
+  isVectorErasable,
+  rasterEraseElement,
+  type Point,
+} from "../eraser/partialErase";
+
 import type { GlobalPoint, LocalPoint, Radians } from "@excalidraw/math";
 
 import type {
@@ -5034,6 +5042,24 @@ class App extends React.Component<AppProps, AppState> {
           return;
         }
 
+        // Brush size for the partial/paint eraser
+        if (
+          this.state.activeTool.type === "eraser" &&
+          (event.key === "[" || event.key === "]")
+        ) {
+          event.preventDefault();
+          const delta = event.key === "]" ? 2 : -2;
+          const next = Math.max(
+            2,
+            Math.min(100, this.state.eraserBrushSize + delta),
+          );
+          this.setState({ eraserBrushSize: next });
+          if (this.state.activeTool.mode === "partial") {
+            this.eraserTrail.setSize(next);
+          }
+          return;
+        }
+
         // Shape switching
         if (event.key === KEYS.ESCAPE) {
           this.updateEditorAtom(convertElementTypePopupAtom, null);
@@ -5777,6 +5803,7 @@ class App extends React.Component<AppProps, AppState> {
     tool: ({ type: ToolType } | { type: "custom"; customType: string }) & {
       locked?: boolean;
       fromSelection?: boolean;
+      mode?: "object" | "partial";
     },
     keepSelection = false,
   ) => {
@@ -8426,6 +8453,11 @@ class App extends React.Component<AppProps, AppState> {
     );
 
     if (this.state.activeTool.type === "eraser") {
+      this.eraserTrail.setSize(
+        this.state.activeTool.mode === "partial"
+          ? this.state.eraserBrushSize
+          : 5,
+      );
       this.eraserTrail.startPath(
         pointerDownState.lastCoords.x,
         pointerDownState.lastCoords.y,
@@ -11587,6 +11619,9 @@ class App extends React.Component<AppProps, AppState> {
       const pointerEnd = this.lastPointerUpEvent || this.lastPointerMoveEvent;
 
       if (isEraserActive(this.state) && pointerStart && pointerEnd) {
+        const eraserPoints = getEraserPoints(
+          this.eraserTrail.getCurrentTrail()?.originalPoints,
+        );
         this.eraserTrail.endPath();
 
         const draggedDistance = pointDistance(
@@ -11610,7 +11645,7 @@ class App extends React.Component<AppProps, AppState> {
             this.elementsPendingErasure.add(hitElement.id),
           );
         }
-        this.eraseElements();
+        this.eraseElements(eraserPoints);
         return;
       } else if (this.elementsPendingErasure.size) {
         this.restoreReadyToEraseElements();
@@ -11933,7 +11968,15 @@ class App extends React.Component<AppProps, AppState> {
     this.triggerRender();
   };
 
-  private eraseElements = () => {
+  private eraseElements = (eraserPoints: Point[] = []) => {
+    if (
+      this.state.activeTool.type === "eraser" &&
+      this.state.activeTool.mode === "partial"
+    ) {
+      void this.eraseElementsPartial(eraserPoints);
+      return;
+    }
+
     let didChange = false;
 
     // Binding is double accounted on both elements and if one of them is
@@ -12015,6 +12058,83 @@ class App extends React.Component<AppProps, AppState> {
       this.store.scheduleCapture();
       this.scene.replaceAllElements(elements);
     }
+  };
+
+  private eraseElementsPartial = async (eraserPoints: Point[]) => {
+    if (eraserPoints.length === 0 && this.elementsPendingErasure.size === 0) {
+      this.restoreReadyToEraseElements();
+      return;
+    }
+
+    const brushRadius = this.state.eraserBrushSize;
+    const elementsMap = this.scene.getNonDeletedElementsMap();
+    const files = this.files;
+    const appState = this.state;
+
+    const vectorElements: ExcalidrawElement[] = [];
+    const rasterReplacements: {
+      image: NonDeleted<ExcalidrawImageElement>;
+      file: BinaryFileData;
+    }[] = [];
+    const deletedIds = new Set<string>();
+
+    for (const id of Array.from(this.elementsPendingErasure)) {
+      const element = this.scene.getElement(id);
+      if (!element) {
+        continue;
+      }
+
+      if (isVectorErasable(element)) {
+        const newElements = getVectorErasedElements(
+          element,
+          eraserPoints,
+          brushRadius,
+        );
+        deletedIds.add(id);
+        vectorElements.push(...newElements);
+      } else {
+        const result = await rasterEraseElement(
+          element,
+          elementsMap,
+          files,
+          appState,
+          eraserPoints,
+          brushRadius,
+        );
+        deletedIds.add(id);
+        if (result) {
+          rasterReplacements.push({
+            image: newElementWith(result.image, { index: element.index }),
+            file: result.file,
+          });
+        }
+      }
+    }
+
+    if (deletedIds.size === 0) {
+      this.restoreReadyToEraseElements();
+      return;
+    }
+
+    if (rasterReplacements.length) {
+      this.addFiles(rasterReplacements.map((r) => r.file));
+    }
+
+    const elements = this.scene.getElementsIncludingDeleted().map((ele) => {
+      if (deletedIds.has(ele.id)) {
+        return newElementWith(ele, { isDeleted: true });
+      }
+      return ele;
+    });
+
+    this.store.scheduleCapture();
+    this.scene.replaceAllElements([
+      ...elements,
+      ...vectorElements,
+      ...rasterReplacements.map((r) => r.image),
+    ]);
+    this.elementsPendingErasure = new Set();
+    this.triggerRender();
   };
 
   private initializeImage = async (

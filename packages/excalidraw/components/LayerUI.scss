@@ -187,3 +187,26 @@
     }
   }
 }
+
+  .eraser-options {
+    .eraser-mode-btn {
+      border: 1px solid var(--color-surface-lowest);
+      background: var(--color-surface-low);
+      color: var(--color-text);
+      font-size: 11px;
+      padding: 4px 8px;
+      cursor: pointer;
+      border-radius: var(--border-radius, 4px);
+
+      &.active {
+        background: var(--color-primary);
+        color: var(--color-primary-contrast, #fff);
+        border-color: var(--color-primary);
+      }
+    }
+
+    input[type="range"] {
+      width: 96px;
+      cursor: pointer;
+    }
+  }
