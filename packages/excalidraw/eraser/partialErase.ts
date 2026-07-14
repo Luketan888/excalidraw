@@ -43,65 +43,73 @@ const distanceToSegmentSq = (
   return ddx * ddx + ddy * ddy;
 };
 
-const isPointErased = (
-  point: Point,
-  eraserPoints: Point[],
-  brushRadius: number,
-): boolean => {
-  const radiusSq = brushRadius * brushRadius;
-  for (let i = 1; i < eraserPoints.length; i++) {
-    const a = eraserPoints[i - 1];
-    const b = eraserPoints[i];
-    if (
-      distanceToSegmentSq(point[0], point[1], a[0], a[1], b[0], b[1]) <=
-      radiusSq
-    ) {
-      return true;
-    }
-  }
-  if (eraserPoints.length === 1) {
-    const a = eraserPoints[0];
-    const ddx = point[0] - a[0];
-    const ddy = point[1] - a[1];
-    return ddx * ddx + ddy * ddy <= radiusSq;
-  }
-  return false;
-};
-
 /**
- * Returns the runs of consecutive non-erased points. A run needs at least
- * two points to form a drawable segment.
+ * Marks each element segment as "removed" when the eraser brush comes within
+ * `brushRadius` of it, then derives the remaining runs (sub-polylines) by
+ * splitting at the removed segments. This correctly erases the middle of a
+ * line (not just near its points) and splits the element into separate parts.
  */
 const getErasedRuns = (
   element: ExcalidrawElement,
   eraserPoints: Point[],
   brushRadius: number,
-): number[][] => {
+): { runs: number[][]; erasedAny: boolean } => {
   const points =
     isFreeDrawElement(element) || isLinearElement(element)
       ? (element as ExcalidrawFreeDrawElement | ExcalidrawLinearElement).points
       : [];
+  const n = points.length;
+  const radiusSq = brushRadius * brushRadius;
 
-  const erased = points.map((p) =>
-    isPointErased([element.x + p[0], element.y + p[1]], eraserPoints, brushRadius),
-  );
+  if (n < 2) {
+    const erasedAny =
+      n === 1 &&
+      eraserPoints.some(
+        (p) => distanceToSegmentSq(p[0], p[1], element.x + points[0][0], element.y + points[0][1], element.x + points[0][0], element.y + points[0][1]) <= radiusSq,
+      );
+    return { runs: [], erasedAny };
+  }
+
+  const globalPts: Point[] = points.map((p) => [
+    element.x + p[0],
+    element.y + p[1],
+  ]);
+
+  const segKept: boolean[] = [];
+  let removedAny = false;
+  for (let i = 0; i < n - 1; i++) {
+    const [ax, ay] = globalPts[i];
+    const [bx, by] = globalPts[i + 1];
+    let removed = false;
+    for (const ep of eraserPoints) {
+      if (distanceToSegmentSq(ep[0], ep[1], ax, ay, bx, by) <= radiusSq) {
+        removed = true;
+        break;
+      }
+    }
+    if (removed) {
+      removedAny = true;
+    }
+    segKept.push(!removed);
+  }
 
   const runs: number[][] = [];
-  let current: number[] = [];
-  for (let i = 0; i < erased.length; i++) {
-    if (erased[i]) {
+  let current: number[] = [0];
+  for (let i = 0; i < n - 1; i++) {
+    if (segKept[i]) {
+      current.push(i + 1);
+    } else {
       if (current.length >= 2) {
         runs.push(current);
       }
-      current = [];
-    } else {
-      current.push(i);
+      current = [i + 1];
     }
   }
   if (current.length >= 2) {
     runs.push(current);
   }
-  return runs;
+
+  return { runs, erasedAny: removedAny };
 };
 
 export const isVectorErasable = (element: ExcalidrawElement) => {
@@ -116,32 +124,40 @@ export const isVectorErasable = (element: ExcalidrawElement) => {
   return false;
 };
 
-/** Splits a freehand/linear element into the remaining (non-erased) runs. */
+/**
+ * Splits a freehand/linear element into the remaining (non-erased) runs.
+ * Returns `null` when nothing was erased, `[]` when fully erased, or the
+ * array of remaining segments (each with a fresh id) otherwise.
+ */
 export const getVectorErasedElements = (
   element: ExcalidrawElement,
   eraserPoints: Point[],
   brushRadius: number,
-): ExcalidrawElement[] => {
-  const runs = getErasedRuns(element, eraserPoints, brushRadius);
+): ExcalidrawElement[] | null => {
+  const { runs, erasedAny } = getErasedRuns(element, eraserPoints, brushRadius);
+
+  if (!erasedAny) {
+    return null;
+  }
 
   if (runs.length === 0) {
     return [];
   }
+
+  const newId = () => randomId() as ExcalidrawElement["id"];
 
   return runs.map((run) => {
     if (isFreeDrawElement(element)) {
       const freedraw = element as ExcalidrawFreeDrawElement;
       const points = run.map((i) => freedraw.points[i]);
       const pressures = run.map((i) => freedraw.pressures[i] ?? 0.5);
-      return newElementWith(freedraw, {
-        points,
-        pressures,
-      });
+      return { ...newElementWith(freedraw, { points, pressures }), id: newId() };
     }
     const linear = element as ExcalidrawLinearElement;
-    return newElementWith(linear, {
-      points: run.map((i) => linear.points[i]),
-    });
+    return {
+      ...newElementWith(linear, { points: run.map((i) => linear.points[i]) }),
+      id: newId(),
+    };
   });
 };
 

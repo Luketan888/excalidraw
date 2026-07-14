@@ -713,6 +713,7 @@ class App extends React.Component<AppProps, AppState> {
   private initializedEmbeds = new Set<ExcalidrawIframeLikeElement["id"]>();
 
   private elementsPendingErasure: ElementsPendingErasure = new Set();
+  private elementsPendingRasterErase: ElementsPendingErasure = new Set();
 
   private _initialized = false;
 
@@ -7873,14 +7874,21 @@ class App extends React.Component<AppProps, AppState> {
     event: PointerEvent,
     scenePointer: { x: number; y: number },
   ) => {
-    const elementsToErase = this.eraserTrail.addPointToPath(
+    const candidateIds = this.eraserTrail.addPointToPath(
       scenePointer.x,
       scenePointer.y,
       event.altKey,
     );
 
-    this.elementsPendingErasure = new Set(elementsToErase);
-    this.triggerRender();
+    if (
+      this.state.activeTool.type === "eraser" &&
+      this.state.activeTool.mode === "partial"
+    ) {
+      this.eraseElementsPartialLive(candidateIds);
+    } else {
+      this.elementsPendingErasure = new Set(candidateIds);
+      this.triggerRender();
+    }
   };
 
   // set touch moving for mobile context menu
@@ -8458,6 +8466,7 @@ class App extends React.Component<AppProps, AppState> {
           ? this.state.eraserBrushSize
           : 5,
       );
+      this.elementsPendingRasterErase = new Set();
       this.eraserTrail.startPath(
         pointerDownState.lastCoords.x,
         pointerDownState.lastCoords.y,
@@ -11965,6 +11974,7 @@ class App extends React.Component<AppProps, AppState> {
 
   private restoreReadyToEraseElements = () => {
     this.elementsPendingErasure = new Set();
+    this.elementsPendingRasterErase = new Set();
     this.triggerRender();
   };
 
@@ -12061,7 +12071,12 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   private eraseElementsPartial = async (eraserPoints: Point[]) => {
-    if (eraserPoints.length === 0 && this.elementsPendingErasure.size === 0) {
+    const pending = new Set<string>([
+      ...this.elementsPendingErasure,
+      ...this.elementsPendingRasterErase,
+    ]);
+
+    if (eraserPoints.length === 0 && pending.size === 0) {
       this.restoreReadyToEraseElements();
       return;
     }
@@ -12078,7 +12093,7 @@ class App extends React.Component<AppProps, AppState> {
     }[] = [];
     const deletedIds = new Set<string>();
 
-    for (const id of Array.from(this.elementsPendingErasure)) {
+    for (const id of Array.from(pending)) {
       const element = this.scene.getElement(id);
       if (!element) {
         continue;
@@ -12090,6 +12105,9 @@ class App extends React.Component<AppProps, AppState> {
           eraserPoints,
           brushRadius,
         );
+        if (newElements === null) {
+          continue;
+        }
         deletedIds.add(id);
         vectorElements.push(...newElements);
       } else {
@@ -12134,6 +12152,49 @@ class App extends React.Component<AppProps, AppState> {
       ...rasterReplacements.map((r) => r.image),
     ]);
     this.elementsPendingErasure = new Set();
+    this.elementsPendingRasterErase = new Set();
+    this.triggerRender();
+  };
+
+  private eraseElementsPartialLive = (candidateIds: readonly string[]) => {
+    const eraserPoints = getEraserPoints(
+      this.eraserTrail.getCurrentTrail()?.originalPoints,
+    );
+    const brushRadius = this.state.eraserBrushSize;
+
+    const deletedIds = new Set<string>();
+    const newElements: ExcalidrawElement[] = [];
+
+    for (const id of candidateIds) {
+      const element = this.scene.getElement(id);
+      if (!element) {
+        continue;
+      }
+
+      if (isVectorErasable(element)) {
+        const splits = getVectorErasedElements(element, eraserPoints, brushRadius);
+        if (splits === null) {
+          continue;
+        }
+        deletedIds.add(id);
+        newElements.push(...splits);
+      } else {
+        this.elementsPendingRasterErase.add(id);
+      }
+    }
+
+    if (deletedIds.size === 0) {
+      return;
+    }
+
+    const elements = this.scene.getElementsIncludingDeleted().map((ele) => {
+      if (deletedIds.has(ele.id)) {
+        return newElementWith(ele, { isDeleted: true });
+      }
+      return ele;
+    });
+
+    this.scene.replaceAllElements([...elements, ...newElements]);
     this.triggerRender();
   };
 
