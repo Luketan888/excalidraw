@@ -2,7 +2,7 @@ import { act, queryByTestId } from "@testing-library/react";
 import React from "react";
 import { vi } from "vitest";
 
-import { MIME_TYPES, ORIG_ID } from "@excalidraw/common";
+import { DEFAULT_SIDEBAR, LIBRARY_SIDEBAR_TAB, MIME_TYPES, ORIG_ID } from "@excalidraw/common";
 
 import { getCommonBoundingBox } from "@excalidraw/element";
 
@@ -249,9 +249,9 @@ describe("library menu", () => {
     const latestLibrary = await h.app.library.getLatestLibrary();
     expect(latestLibrary.length).toBe(0);
 
-    const libraryButton = container.querySelector(".sidebar-trigger");
-
-    fireEvent.click(libraryButton!);
+    act(() => {
+      h.app.toggleSidebar({ name: DEFAULT_SIDEBAR.name, tab: LIBRARY_SIDEBAR_TAB });
+    });
     fireEvent.click(
       queryByTestId(
         container.querySelector(".layer-ui__library")!,

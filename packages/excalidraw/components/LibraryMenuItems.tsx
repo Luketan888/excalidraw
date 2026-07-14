@@ -6,13 +6,9 @@ import React, {
   useState,
 } from "react";
 
-import { MIME_TYPES, arrayToMap, nextAnimationFrame } from "@excalidraw/common";
+import { MIME_TYPES, arrayToMap } from "@excalidraw/common";
 
 import { duplicateElements } from "@excalidraw/element";
-
-import clsx from "clsx";
-
-import { deburr } from "../deburr";
 
 import { useLibraryCache } from "../hooks/useLibraryItemSvg";
 import { useScrollPosition } from "../hooks/useScrollPosition";
@@ -29,12 +25,6 @@ import Spinner from "./Spinner";
 import Stack from "./Stack";
 
 import "./LibraryMenuItems.scss";
-
-import { TextField } from "./TextField";
-
-import { useEditorInterface } from "./App";
-
-import { Button } from "./Button";
 
 import type { ExcalidrawLibraryIds } from "../data/types";
 
@@ -75,7 +65,6 @@ export default function LibraryMenuItems({
   selectedItems: LibraryItem["id"][];
   onSelectItems: (id: LibraryItem["id"][]) => void;
 }) {
-  const editorInterface = useEditorInterface();
   const libraryContainerRef = useRef<HTMLDivElement>(null);
   const scrollPosition = useScrollPosition<HTMLDivElement>(libraryContainerRef);
 
@@ -228,20 +217,11 @@ export default function LibraryMenuItems({
   );
 
   const itemsRenderedPerBatch =
-    svgCache.size >=
-    (filteredItems.length ? filteredItems : libraryItems).length
+    svgCache.size >= libraryItems.length
       ? CACHED_ITEMS_RENDERED_PER_BATCH
       : ITEMS_RENDERED_PER_BATCH;
 
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    // focus could be stolen by tab trigger button
-    nextAnimationFrame(() => {
-      searchInputRef.current?.focus();
-    });
-  }, []);
-
-  const JSX_whenNotSearching = !IS_SEARCHING && (
+  const JSX_whenNotSearching = (
     <>
       {!IS_LIBRARY_EMPTY && (
         <div className="library-menu-items-container__header">
@@ -310,54 +290,6 @@ export default function LibraryMenuItems({
     </>
   );
 
-  const JSX_whenSearching = IS_SEARCHING && (
-    <>
-      <div className="library-menu-items-container__header">
-        {t("library.search.heading")}
-        {!isLoading && (
-          <div
-            className="library-menu-items-container__header__hint"
-            style={{ cursor: "pointer" }}
-            onPointerDown={(e) => e.preventDefault()}
-            onClick={(event) => {
-              setSearchInputValue("");
-            }}
-          >
-            <kbd>esc</kbd> to clear
-          </div>
-        )}
-      </div>
-      {filteredItems.length > 0 ? (
-        <LibraryMenuSectionGrid>
-          <LibraryMenuSection
-            itemsRenderedPerBatch={itemsRenderedPerBatch}
-            items={filteredItems}
-            onItemSelectToggle={onItemSelectToggle}
-            onItemDrag={onItemDrag}
-            onClick={onItemClick}
-            isItemSelected={isItemSelected}
-            svgCache={svgCache}
-          />
-        </LibraryMenuSectionGrid>
-      ) : (
-        <div className="library-menu-items__no-items">
-          <div className="library-menu-items__no-items__hint">
-            {t("library.search.noResults")}
-          </div>
-          <Button
-            onPointerDown={(e) => e.preventDefault()}
-            onSelect={() => {
-              setSearchInputValue("");
-            }}
-            style={{ width: "auto", marginTop: "1rem" }}
-          >
-            {t("library.search.clearSearch")}
-          </Button>
-        </div>
-      )}
-    </>
-  );
-
   return (
     <div
       className="library-menu-items-container"
@@ -370,18 +302,6 @@ export default function LibraryMenuItems({
       }
     >
       <div className="library-menu-items-header">
-        {!IS_LIBRARY_EMPTY && (
-          <TextField
-            ref={searchInputRef}
-            type="search"
-            className={clsx("library-menu-items-container__search", {
-              hideCancelButton: editorInterface.formFactor !== "phone",
-            })}
-            placeholder={t("library.search.inputPlaceholder")}
-            value={searchInputValue}
-            onChange={(value) => setSearchInputValue(value)}
-          />
-        )}
         <LibraryDropdownMenu
           selectedItems={selectedItems}
           onSelectItems={onSelectItems}
@@ -412,7 +332,6 @@ export default function LibraryMenuItems({
         )}
 
         {JSX_whenNotSearching}
-        {JSX_whenSearching}
 
         {IS_LIBRARY_EMPTY && (
           <LibraryMenuControlButtons

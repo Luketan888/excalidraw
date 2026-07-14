@@ -31,6 +31,8 @@ import {
   resolvablePromise,
   isRunningInIframe,
   isDevEnv,
+  DEFAULT_SIDEBAR,
+  LIBRARY_SIDEBAR_TAB,
 } from "@excalidraw/common";
 import polyfill from "@excalidraw/excalidraw/polyfill";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -143,8 +145,6 @@ import { AIComponents } from "./components/AI";
 import { ExcalidrawPlusIframeExport } from "./ExcalidrawPlusIframeExport";
 
 import "./index.scss";
-
-import { AppSidebar } from "./components/AppSidebar";
 
 import type { CollabAPI } from "./collab/Collab";
 
@@ -981,6 +981,12 @@ const ExcalidrawWrapper = () => {
           isCollabEnabled={!isCollabDisabled}
           theme={appTheme}
           refresh={() => forceRefresh((prev) => !prev)}
+          onLibraryOpen={() =>
+            excalidrawAPI?.toggleSidebar({
+              name: DEFAULT_SIDEBAR.name,
+              tab: LIBRARY_SIDEBAR_TAB,
+            })
+          }
         />
         <AppWelcomeScreen
           onCollabDialogOpen={onCollabDialogOpen}
@@ -1047,8 +1053,6 @@ const ExcalidrawWrapper = () => {
             }
           }}
         />
-
-        <AppSidebar />
 
         {errorMessage && (
           <ErrorDialog onClose={() => setErrorMessage("")}>

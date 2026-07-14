@@ -1,5 +1,6 @@
 import {
   ExcalLogo,
+  LibraryIcon,
   eyeIcon,
 } from "@excalidraw/excalidraw/components/icons";
 import { MainMenu } from "@excalidraw/excalidraw/index";
@@ -19,6 +20,7 @@ export const AppMainMenu: React.FC<{
   isCollabEnabled: boolean;
   theme: Theme | "system";
   refresh: () => void;
+  onLibraryOpen: () => void;
 }> = React.memo((props) => {
   return (
     <MainMenu>
@@ -34,6 +36,9 @@ export const AppMainMenu: React.FC<{
       )}
       <MainMenu.DefaultItems.CommandPalette className="highlighted" />
       <MainMenu.DefaultItems.SearchMenu />
+      <MainMenu.Item icon={LibraryIcon} onSelect={props.onLibraryOpen}>
+        Library
+      </MainMenu.Item>
       <MainMenu.DefaultItems.Help />
       <MainMenu.DefaultItems.ClearCanvas />
       <MainMenu.Separator />
