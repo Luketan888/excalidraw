@@ -7880,15 +7880,13 @@ class App extends React.Component<AppProps, AppState> {
       event.altKey,
     );
 
-    if (
-      this.state.activeTool.type === "eraser" &&
-      this.state.activeTool.mode === "partial"
-    ) {
-      this.eraseElementsPartialLive(candidateIds);
-    } else {
-      this.elementsPendingErasure = new Set(candidateIds);
-      this.triggerRender();
-    }
+    // Accumulate every element touched by the brush during the drag so the
+    // erase is committed on pointer-up. The partial/paint eraser (mode
+    // "partial") reuses the same pointer-up backend (eraseElementsPartial)
+    // as object mode, which splits vectors / rasterizes shapes against the
+    // full eraser trail.
+    this.elementsPendingErasure = new Set(candidateIds);
+    this.triggerRender();
   };
 
   // set touch moving for mobile context menu
@@ -12153,48 +12151,6 @@ class App extends React.Component<AppProps, AppState> {
     ]);
     this.elementsPendingErasure = new Set();
     this.elementsPendingRasterErase = new Set();
-    this.triggerRender();
-  };
-
-  private eraseElementsPartialLive = (candidateIds: readonly string[]) => {
-    const eraserPoints = getEraserPoints(
-      this.eraserTrail.getCurrentTrail()?.originalPoints,
-    );
-    const brushRadius = this.state.eraserBrushSize;
-
-    const deletedIds = new Set<string>();
-    const newElements: ExcalidrawElement[] = [];
-
-    for (const id of candidateIds) {
-      const element = this.scene.getElement(id);
-      if (!element) {
-        continue;
-      }
-
-      if (isVectorErasable(element)) {
-        const splits = getVectorErasedElements(element, eraserPoints, brushRadius);
-        if (splits === null) {
-          continue;
-        }
-        deletedIds.add(id);
-        newElements.push(...splits);
-      } else {
-        this.elementsPendingRasterErase.add(id);
-      }
-    }
-
-    if (deletedIds.size === 0) {
-      return;
-    }
-
-    const elements = this.scene.getElementsIncludingDeleted().map((ele) => {
-      if (deletedIds.has(ele.id)) {
-        return newElementWith(ele, { isDeleted: true });
-      }
-      return ele;
-    });
-
-    this.scene.replaceAllElements([...elements, ...newElements]);
     this.triggerRender();
   };
 
