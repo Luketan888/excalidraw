@@ -43,50 +43,93 @@ const distanceToSegmentSq = (
   return ddx * ddx + ddy * ddy;
 };
 
+type ClipPoint = { x: number; y: number; idx: number };
+// `idx` is the original element-point index when this point IS an original
+// vertex; otherwise -1 (a freshly computed brush-crossing point).
+
 /**
- * Marks each element segment as "removed" when the eraser brush comes within
- * `brushRadius` of it, then derives the remaining runs (sub-polylines) by
- * splitting at the removed segments. This correctly erases the middle of a
- * line (not just near its points) and splits the element into separate parts.
+ * Trims one element segment [A,B] (global coords, segment index `i`) against
+ * the eraser stroke. Returns the kept sub-polyline (global points).
+ * The eraser is treated as a polyline of segments + circles around its
+ * points, so:
+ *   - a segment fully inside the brush is dropped,
+ *   - a segment fully outside is kept whole,
+ *   - a segment crossing the brush is split at the crossing, keeping the
+ *     outside fragments.
+ * This is what makes a "paint" erase leave the un-brushed parts
+ * of a line/shape intact instead of deleting whole segments (which made
+ * short lines vanish when brushed in the middle).
  */
-const segmentsDistanceSq = (
+const clipSegment = (
   ax: number,
   ay: number,
   bx: number,
   by: number,
-  cx: number,
-  cy: number,
-  dx: number,
-  dy: number,
-): number => {
-  // Approximate distance between segment AB and segment CD by sampling
-  // each endpoint's distance to the other segment. Accurate for parallel
-  // and intersecting segments; the only under-estimation-free case we
-  // care about for brush erasing is a near miss, which endpoint
-  // projection captures well enough against the brush radius.
-  return Math.min(
-    distanceToSegmentSq(ax, ay, cx, cy, dx, dy),
-    distanceToSegmentSq(bx, by, cx, cy, dx, dy),
-    distanceToSegmentSq(cx, cy, ax, ay, bx, by),
-    distanceToSegmentSq(dx, dy, ax, ay, bx, by),
-  );
+  i: number,
+  radiusSq: number,
+  distToStrokeSq: (x: number, y: number) => number,
+): { points: ClipPoint[]; anyCrossing: boolean } => {
+  const len = Math.hypot(bx - ax, by - ay);
+  const steps = Math.max(1, Math.ceil(len / 2));
+  const out: ClipPoint[] = [];
+  let prevInside: boolean | null = null;
+  let anyCrossing = false;
+
+  for (let s = 0; s <= steps; s++) {
+    const t = s / steps;
+    const px = ax + t * (bx - ax);
+    const py = ay + t * (by - ay);
+    const inside = distToStrokeSq(px, py) <= radiusSq;
+
+    if (s === 0) {
+      if (!inside) {
+        out.push({ x: px, y: py, idx: i });
+      }
+    } else {
+      if (prevInside !== null && inside !== prevInside) {
+        anyCrossing = true;
+        const tc = (s - 0.5) / steps;
+        out.push({
+          x: ax + tc * (bx - ax),
+          y: ay + tc * (by - ay),
+          idx: -1,
+        });
+      }
+      if (!inside) {
+        out.push({ x: px, y: py, idx: s === steps ? i + 1 : -1 });
+      }
+    }
+    prevInside = inside;
+  }
+
+  // Fully outside, no crossing: keep the whole segment (exact endpoints,
+  // avoid re-sampling into many points).
+  if (!anyCrossing && out.length > 0) {
+    return {
+      points: [
+        { x: ax, y: ay, idx: i },
+        { x: bx, y: by, idx: i + 1 },
+      ],
+      anyCrossing: false,
+    };
+  }
+
+  return { points: out, anyCrossing };
 };
 
 /**
- * Marks each element segment as "removed" when the eraser brush comes within
- * `brushRadius` of it, then derives the remaining runs (sub-polylines) by
- * splitting at the removed segments. This correctly erases the middle of a
- * line (not just near its points) and splits the element into separate parts.
+ * Builds the kept runs (sub-polylines) of an element after the eraser
+ * brush is applied. Splits each segment at the brush crossing so the
+ * un-brushed parts survive, and derives the remaining runs by chaining
+ * consecutive kept fragments.
  *
- * The eraser stroke is treated as a polyline (segments between consecutive
- * eraser points), so fast strokes that cross a line between two sampled
- * points are still erased.
+ * Returns runs in GLOBAL coordinates (each a ClipPoint[]).
  */
 const getErasedRuns = (
   element: ExcalidrawElement,
   eraserPoints: Point[],
   brushRadius: number,
-): { runs: number[][]; erasedAny: boolean } => {
+): { runs: ClipPoint[][]; erasedAny: boolean } => {
   const points =
     isFreeDrawElement(element) || isLinearElement(element)
       ? (element as ExcalidrawFreeDrawElement | ExcalidrawLinearElement).points
@@ -116,7 +159,7 @@ const getErasedRuns = (
     element.y + p[1],
   ]);
 
-  // Build eraser stroke segments so we catch fast strokes.
+  // Eraser stroke: segments between consecutive points + per-point circles.
   const eraserSegments: [number, number, number, number][] = [];
   for (let i = 1; i < eraserPoints.length; i++) {
     eraserSegments.push([
@@ -127,50 +170,71 @@ const getErasedRuns = (
     ]);
   }
 
-  const segKept: boolean[] = [];
-  let removedAny = false;
+  const distToStrokeSq = (qx: number, qy: number): number => {
+    let best = Infinity;
+    for (const ep of eraserPoints) {
+      best = Math.min(best, distanceToSegmentSq(qx, qy, ep[0], ep[1], ep[0], ep[1]));
+    }
+    for (const [cx, cy, dx, dy] of eraserSegments) {
+      best = Math.min(best, distanceToSegmentSq(qx, qy, cx, cy, dx, dy));
+    }
+    return best;
+  };
+
+  const runs: ClipPoint[][] = [];
+  let current: ClipPoint[] = [];
+  let erasedAny = false;
+  const mergeEps = 2; // px, ~ sampling step
+
   for (let i = 0; i < n - 1; i++) {
     const [ax, ay] = globalPts[i];
     const [bx, by] = globalPts[i + 1];
-    let removed = false;
-    if (eraserSegments.length > 0) {
-      for (const [cx, cy, dx, dy] of eraserSegments) {
-        if (segmentsDistanceSq(ax, ay, bx, by, cx, cy, dx, dy) <= radiusSq) {
-          removed = true;
-          break;
-        }
-      }
-    } else {
-      for (const ep of eraserPoints) {
-        if (distanceToSegmentSq(ep[0], ep[1], ax, ay, bx, by) <= radiusSq) {
-          removed = true;
-          break;
-        }
-      }
-    }
-    if (removed) {
-      removedAny = true;
-    }
-    segKept.push(!removed);
-  }
+    const { points: kept, anyCrossing } = clipSegment(
+      ax,
+      ay,
+      bx,
+      by,
+      i,
+      radiusSq,
+      distToStrokeSq,
+    );
 
-  const runs: number[][] = [];
-  let current: number[] = [0];
-  for (let i = 0; i < n - 1; i++) {
-    if (segKept[i]) {
-      current.push(i + 1);
-    } else {
+    if (kept.length === 0) {
+      erasedAny = true;
       if (current.length >= 2) {
         runs.push(current);
       }
-      current = [i + 1];
+      current = [];
+      continue;
+    }
+
+    if (anyCrossing) {
+      erasedAny = true;
+    }
+
+    if (current.length > 0) {
+      const last = current[current.length - 1];
+      const first = kept[0];
+      if (Math.hypot(last.x - first.x, last.y - first.y) > mergeEps) {
+        if (current.length >= 2) {
+          runs.push(current);
+        }
+        current = [];
+      }
+    }
+    if (current.length === 0) {
+      current = [kept[0]];
+    }
+    for (let k = 1; k < kept.length; k++) {
+      current.push(kept[k]);
     }
   }
+
   if (current.length >= 2) {
     runs.push(current);
   }
 
-  return { runs, erasedAny: removedAny };
+  return { runs, erasedAny };
 };
 
 export const isVectorErasable = (element: ExcalidrawElement) => {
@@ -189,6 +253,9 @@ export const isVectorErasable = (element: ExcalidrawElement) => {
  * Splits a freehand/linear element into the remaining (non-erased) runs.
  * Returns `null` when nothing was erased, `[]` when fully erased, or the
  * array of remaining segments (each with a fresh id) otherwise.
+ *
+ * Pressure for original vertices is preserved; freshly cut points use a
+ * neutral pressure (visually negligible for the cut edge).
  */
 export const getVectorErasedElements = (
   element: ExcalidrawElement,
@@ -207,16 +274,30 @@ export const getVectorErasedElements = (
 
   const newId = () => randomId() as ExcalidrawElement["id"];
 
+  const pressuresFor = (run: ClipPoint[]): number[] => {
+    const freedraw = element as ExcalidrawFreeDrawElement;
+    return run.map((p) =>
+      p.idx >= 0 ? (freedraw.pressures?.[p.idx] ?? 0.5) : 0.5,
+    );
+  };
+
   return runs.map((run) => {
+    const relPoints = run.map(
+      (p) => [p.x - element.x, p.y - element.y],
+    ) as unknown as ExcalidrawFreeDrawElement["points"];
     if (isFreeDrawElement(element)) {
       const freedraw = element as ExcalidrawFreeDrawElement;
-      const points = run.map((i) => freedraw.points[i]);
-      const pressures = run.map((i) => freedraw.pressures[i] ?? 0.5);
-      return { ...newElementWith(freedraw, { points, pressures }), id: newId() };
+      return {
+        ...newElementWith(freedraw, {
+          points: relPoints,
+          pressures: pressuresFor(run),
+        }),
+        id: newId(),
+      };
     }
     const linear = element as ExcalidrawLinearElement;
     return {
-      ...newElementWith(linear, { points: run.map((i) => linear.points[i]) }),
+      ...newElementWith(linear, { points: relPoints }),
       id: newId(),
     };
   });

@@ -102,9 +102,9 @@ export class EraserTrail extends AnimatedTrail {
       eraserPath[eraserPath.length - 2],
     );
 
-    const candidateElements = this.app.visibleElements.filter(
-      (el) => !el.locked,
-    );
+    const candidateElements = this.app.scene
+      .getElementsIncludingDeleted()
+      .filter((el) => !el.isDeleted && !el.locked);
 
     const candidateElementsMap = arrayToMap(candidateElements);
 
