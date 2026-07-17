@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React from "react";
+import React, { useState } from "react";
 
 import {
   CLASSES,
@@ -25,6 +25,7 @@ import { useAtom, useAtomValue } from "../editor-jotai";
 
 import { t } from "../i18n";
 import { getScrollToContentState } from "../scene";
+import { getEraserSize, setEraserSize } from "../eraser/eraserSize";
 
 import {
   SelectedShapeActions,
@@ -56,6 +57,7 @@ import { HelpDialog } from "./HelpDialog";
 import { HintViewer } from "./HintViewer";
 import { ImageExportDialog } from "./ImageExportDialog";
 import { Island } from "./Island";
+import { Range } from "./Range";
 import { JSONExportDialog } from "./JSONExportDialog";
 import { LaserPointerButton } from "./LaserPointerButton";
 import { Toast } from "./Toast";
@@ -132,6 +134,27 @@ const DefaultOverwriteConfirmDialog = () => {
       <OverwriteConfirmDialog.Actions.SaveToDisk />
       <OverwriteConfirmDialog.Actions.ExportToImage />
     </OverwriteConfirmDialog>
+  );
+};
+
+const EraserSizeControl = () => {
+  const [size, setSize] = useState(getEraserSize());
+
+  return (
+    <Island className="eraser-size-control" padding={2}>
+      <Range
+        label={t("labels.eraserSize")}
+        value={size}
+        min={1}
+        max={50}
+        step={1}
+        onChange={(value) => {
+          setSize(value);
+          setEraserSize(value);
+        }}
+        testId="eraser-size"
+      />
+    </Island>
   );
 };
 
@@ -311,6 +334,7 @@ const LayerUI = ({
               })}
             >
               {shouldRenderSelectedShapeActions && renderSelectedShapeActions()}
+              {appState.activeTool.type === "eraser" && <EraserSizeControl />}
             </div>
             {/* in compact UI the pen mode button lives outside the toolbar, as
                 a separate floating button below the compact actions menu

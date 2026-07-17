@@ -39,6 +39,7 @@
     "pressure_constant": "Constant",
     "pressure_variable": "Variable",
     "opacity": "Opacity",
+    "eraserSize": "Eraser size",
     "textAlign": "Text align",
     "edges": "Edges",
     "sharp": "Sharp",

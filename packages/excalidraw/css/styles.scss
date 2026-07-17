@@ -379,6 +379,14 @@ body.excalidraw-cursor-resize * {
     }
   }
 
+  .eraser-size-control {
+    width: fit-content;
+
+    .range-wrapper {
+      width: 9rem;
+    }
+  }
+
   .App-menu_top > *:last-child {
     justify-self: flex-end;
   }

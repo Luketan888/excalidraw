@@ -525,7 +525,18 @@ const ExcalidrawWrapper = () => {
 
     initializeScene({ collabAPI, excalidrawAPI }).then(async (data) => {
       loadImages(data, /* isInitialLoad */ true);
-      initialStatePromiseRef.current.promise.resolve(data.scene);
+      initialStatePromiseRef.current.promise.resolve({
+        ...data.scene,
+        appState: {
+          ...data.scene?.appState,
+          // Drawthing brand defaults (applied only on first load; saved
+          // preferences in localStorage always take precedence)
+          currentItemStrokeColor: "#e07b1e",
+          currentItemStrokeWidthKey: "bold",
+          gridModeEnabled: true,
+          gridSize: 20,
+        },
+      });
     });
 
     const onHashChange = async (event: HashChangeEvent) => {

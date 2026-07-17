@@ -116,6 +116,7 @@ export class EraserTrail extends AnimatedTrail {
           element,
           candidateElementsMap,
           this.app.state.zoom.value,
+          this.options.size ?? 5,
         );
 
         if (intersects) {
@@ -152,6 +153,7 @@ export class EraserTrail extends AnimatedTrail {
           element,
           candidateElementsMap,
           this.app.state.zoom.value,
+          this.options.size ?? 5,
         );
 
         if (intersects) {
@@ -202,11 +204,17 @@ const eraserTest = (
   element: ExcalidrawElement,
   elementsMap: ElementsMap,
   zoom: number,
+  size: number,
 ): boolean => {
   const lastPoint = pathSegment[1];
 
+  // size is the eraser stroke width in screen pixels; convert to scene units
+  // so the erase area matches the visible eraser trail
+  const eraserRadius = size / zoom;
+
   // PERF: Do a quick bounds intersection test first because it's cheap
-  const threshold = isFreeDrawElement(element) ? 15 : element.strokeWidth / 2;
+  const threshold =
+    (isFreeDrawElement(element) ? 15 : element.strokeWidth / 2) + eraserRadius;
   const segmentBounds = [
     Math.min(pathSegment[0][0], pathSegment[1][0]) - threshold,
     Math.min(pathSegment[0][1], pathSegment[1][1]) - threshold,
@@ -245,7 +253,7 @@ const eraserTest = (
       outlinePoints,
       elementsMap,
     );
-    const tolerance = Math.max(2.25, 5 / zoom); // NOTE: Visually fine-tuned approximation
+    const tolerance = Math.max(2.25, 5 / zoom) + eraserRadius; // NOTE: Visually fine-tuned approximation
 
     for (const seg of strokeSegments) {
       if (lineSegmentsDistance(seg, pathSegment) <= tolerance) {
@@ -272,10 +280,9 @@ const eraserTest = (
   const boundTextElement = getBoundTextElement(element, elementsMap);
 
   if (isArrowElement(element) || (isLineElement(element) && !element.polygon)) {
-    const tolerance = Math.max(
-      element.strokeWidth,
-      (element.strokeWidth * 2) / zoom,
-    );
+    const tolerance =
+      Math.max(element.strokeWidth, (element.strokeWidth * 2) / zoom) +
+      eraserRadius;
 
     // If the eraser movement is so fast that a large distance is covered
     // between the last two points, the distanceToElement miss, so we test
