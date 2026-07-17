@@ -108,12 +108,6 @@ export class EraserTrail extends AnimatedTrail {
 
     const candidateElementsMap = arrayToMap(candidateElements);
 
-    const brushRadius =
-      this.app.state.activeTool.type === "eraser" &&
-      this.app.state.activeTool.mode === "partial"
-        ? this.app.state.eraserBrushSize
-        : undefined;
-
     for (const element of candidateElements) {
       // restore only if already added to the to-be-erased set
       if (restoreToErase && this.elementsToErase.has(element.id)) {
@@ -122,7 +116,6 @@ export class EraserTrail extends AnimatedTrail {
           element,
           candidateElementsMap,
           this.app.state.zoom.value,
-          brushRadius,
         );
 
         if (intersects) {
@@ -159,7 +152,6 @@ export class EraserTrail extends AnimatedTrail {
           element,
           candidateElementsMap,
           this.app.state.zoom.value,
-          brushRadius,
         );
 
         if (intersects) {
@@ -210,12 +202,11 @@ const eraserTest = (
   element: ExcalidrawElement,
   elementsMap: ElementsMap,
   zoom: number,
-  brushRadius?: number,
 ): boolean => {
   const lastPoint = pathSegment[1];
 
   // PERF: Do a quick bounds intersection test first because it's cheap
-  const threshold = brushRadius ?? (isFreeDrawElement(element) ? 15 : element.strokeWidth / 2);
+  const threshold = isFreeDrawElement(element) ? 15 : element.strokeWidth / 2;
   const segmentBounds = [
     Math.min(pathSegment[0][0], pathSegment[1][0]) - threshold,
     Math.min(pathSegment[0][1], pathSegment[1][1]) - threshold,
@@ -254,7 +245,7 @@ const eraserTest = (
       outlinePoints,
       elementsMap,
     );
-    const tolerance = brushRadius ?? Math.max(2.25, 5 / zoom); // NOTE: Visually fine-tuned approximation
+    const tolerance = Math.max(2.25, 5 / zoom); // NOTE: Visually fine-tuned approximation
 
     for (const seg of strokeSegments) {
       if (lineSegmentsDistance(seg, pathSegment) <= tolerance) {
@@ -281,7 +272,7 @@ const eraserTest = (
   const boundTextElement = getBoundTextElement(element, elementsMap);
 
   if (isArrowElement(element) || (isLineElement(element) && !element.polygon)) {
-    const tolerance = brushRadius ?? Math.max(
+    const tolerance = Math.max(
       element.strokeWidth,
       (element.strokeWidth * 2) / zoom,
     );

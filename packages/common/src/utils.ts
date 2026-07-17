@@ -254,7 +254,6 @@ export const updateActiveTool = (
   ) & {
     locked?: boolean;
     fromSelection?: boolean;
-    mode?: "object" | "partial";
   }) & {
     lastActiveToolBeforeEraser?: ActiveTool | null;
   },
@@ -278,7 +277,6 @@ export const updateActiveTool = (
     customType: null,
     locked: data.locked ?? appState.activeTool.locked,
     fromSelection: data.fromSelection ?? false,
-    mode: data.mode ?? (appState.activeTool as { mode?: "object" | "partial" }).mode,
   } as AppState["activeTool"];
 };
 

@@ -55,7 +55,6 @@ export const getDefaultAppState = (): Omit<
       locked: DEFAULT_ELEMENT_PROPS.locked,
       fromSelection: false,
       lastActiveTool: null,
-      mode: "partial",
     },
     preferredSelectionTool: {
       type: "selection",
@@ -132,7 +131,6 @@ export const getDefaultAppState = (): Omit<
     activeLockedId: null,
     bindMode: "orbit",
     boxSelectionMode: "contain",
-    eraserBrushSize: 8,
   };
 };
 
@@ -265,7 +263,6 @@ const APP_STATE_STORAGE_CONF = (<
   lockedMultiSelections: { browser: true, export: true, server: true },
   activeLockedId: { browser: false, export: false, server: false },
   bindMode: { browser: true, export: false, server: false },
-  eraserBrushSize: { browser: true, export: false, server: false },
 });
 
 const _clearAppStateForStorage = <

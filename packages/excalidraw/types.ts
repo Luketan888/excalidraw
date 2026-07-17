@@ -167,11 +167,6 @@ export type ActiveTool =
   | {
       type: ToolType;
       customType: null;
-      /**
-       * Eraser mode: "object" deletes whole elements (default), "partial"
-       * erases only the touched portion like a paint eraser.
-       */
-      mode?: "object" | "partial";
     }
   | {
       type: "custom";
@@ -356,8 +351,6 @@ export interface AppState {
   isBindingEnabled: boolean;
   /** user box selection preference; defaults to "contain" when unset */
   boxSelectionMode: BoxSelectionMode;
-  /** eraser brush radius (in scene pixels) used in partial/paint eraser mode */
-  eraserBrushSize: number;
   /** user arrow binding preference */
   bindingPreference: "enabled" | "disabled";
   /** user preference whether arrow snap to midpoints while binding */

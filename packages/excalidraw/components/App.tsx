@@ -264,14 +264,6 @@ import {
   isNonDeletedElement,
 } from "@excalidraw/element";
 
-import {
-  getEraserPoints,
-  getVectorErasedElements,
-  isVectorErasable,
-  rasterEraseElement,
-  type Point,
-} from "../eraser/partialErase";
-
 import type { GlobalPoint, LocalPoint, Radians } from "@excalidraw/math";
 
 import type {
@@ -303,6 +295,8 @@ import type {
 } from "@excalidraw/element/types";
 
 import type { Mutable, ValueOf } from "@excalidraw/common/utility-types";
+
+import { getEraserPoints, type Point } from "../eraser/partialErase";
 
 import {
   actionAddToLibrary,
@@ -713,7 +707,6 @@ class App extends React.Component<AppProps, AppState> {
   private initializedEmbeds = new Set<ExcalidrawIframeLikeElement["id"]>();
 
   private elementsPendingErasure: ElementsPendingErasure = new Set();
-  private elementsPendingRasterErase: ElementsPendingErasure = new Set();
 
   private _initialized = false;
 
@@ -5043,24 +5036,6 @@ class App extends React.Component<AppProps, AppState> {
           return;
         }
 
-        // Brush size for the partial/paint eraser
-        if (
-          this.state.activeTool.type === "eraser" &&
-          (event.key === "[" || event.key === "]")
-        ) {
-          event.preventDefault();
-          const delta = event.key === "]" ? 2 : -2;
-          const next = Math.max(
-            2,
-            Math.min(100, this.state.eraserBrushSize + delta),
-          );
-          this.setState({ eraserBrushSize: next });
-          if (this.state.activeTool.mode === "partial") {
-            this.eraserTrail.setSize(next);
-          }
-          return;
-        }
-
         // Shape switching
         if (event.key === KEYS.ESCAPE) {
           this.updateEditorAtom(convertElementTypePopupAtom, null);
@@ -7881,10 +7856,7 @@ class App extends React.Component<AppProps, AppState> {
     );
 
     // Accumulate every element touched by the brush during the drag so the
-    // erase is committed on pointer-up. The partial/paint eraser (mode
-    // "partial") reuses the same pointer-up backend (eraseElementsPartial)
-    // as object mode, which splits vectors / rasterizes shapes against the
-    // full eraser trail.
+    // erase is committed on pointer-up.
     this.elementsPendingErasure = new Set(candidateIds);
     this.triggerRender();
   };
@@ -8459,12 +8431,7 @@ class App extends React.Component<AppProps, AppState> {
     );
 
     if (this.state.activeTool.type === "eraser") {
-      this.eraserTrail.setSize(
-        this.state.activeTool.mode === "partial"
-          ? this.state.eraserBrushSize
-          : 5,
-      );
-      this.elementsPendingRasterErase = new Set();
+      this.eraserTrail.setSize(5);
       this.eraserTrail.startPath(
         pointerDownState.lastCoords.x,
         pointerDownState.lastCoords.y,
@@ -11972,19 +11939,10 @@ class App extends React.Component<AppProps, AppState> {
 
   private restoreReadyToEraseElements = () => {
     this.elementsPendingErasure = new Set();
-    this.elementsPendingRasterErase = new Set();
     this.triggerRender();
   };
 
   private eraseElements = (eraserPoints: Point[] = []) => {
-    if (
-      this.state.activeTool.type === "eraser" &&
-      this.state.activeTool.mode === "partial"
-    ) {
-      void this.eraseElementsPartial(eraserPoints);
-      return;
-    }
-
     let didChange = false;
 
     // Binding is double accounted on both elements and if one of them is
@@ -12066,92 +12024,6 @@ class App extends React.Component<AppProps, AppState> {
       this.store.scheduleCapture();
       this.scene.replaceAllElements(elements);
     }
-  };
-
-  private eraseElementsPartial = async (eraserPoints: Point[]) => {
-    const pending = new Set<string>([
-      ...this.elementsPendingErasure,
-      ...this.elementsPendingRasterErase,
-    ]);
-
-    if (eraserPoints.length === 0 && pending.size === 0) {
-      this.restoreReadyToEraseElements();
-      return;
-    }
-
-    const brushRadius = this.state.eraserBrushSize;
-    const elementsMap = this.scene.getNonDeletedElementsMap();
-    const files = this.files;
-    const appState = this.state;
-
-    const vectorElements: ExcalidrawElement[] = [];
-    const rasterReplacements: {
-      image: NonDeleted<ExcalidrawImageElement>;
-      file: BinaryFileData;
-    }[] = [];
-    const deletedIds = new Set<string>();
-
-    for (const id of Array.from(pending)) {
-      const element = this.scene.getElement(id);
-      if (!element) {
-        continue;
-      }
-
-      if (isVectorErasable(element)) {
-        const newElements = getVectorErasedElements(
-          element,
-          eraserPoints,
-          brushRadius,
-        );
-        if (newElements === null) {
-          continue;
-        }
-        deletedIds.add(id);
-        vectorElements.push(...newElements);
-      } else {
-        const result = await rasterEraseElement(
-          element,
-          elementsMap,
-          files,
-          appState,
-          eraserPoints,
-          brushRadius,
-        );
-        deletedIds.add(id);
-        if (result) {
-          rasterReplacements.push({
-            image: newElementWith(result.image, { index: element.index }),
-            file: result.file,
-          });
-        }
-      }
-    }
-
-    if (deletedIds.size === 0) {
-      this.restoreReadyToEraseElements();
-      return;
-    }
-
-    if (rasterReplacements.length) {
-      this.addFiles(rasterReplacements.map((r) => r.file));
-    }
-
-    const elements = this.scene.getElementsIncludingDeleted().map((ele) => {
-      if (deletedIds.has(ele.id)) {
-        return newElementWith(ele, { isDeleted: true });
-      }
-      return ele;
-    });
-
-    this.store.scheduleCapture();
-    this.scene.replaceAllElements([
-      ...elements,
-      ...vectorElements,
-      ...rasterReplacements.map((r) => r.image),
-    ]);
-    this.elementsPendingErasure = new Set();
-    this.elementsPendingRasterErase = new Set();
-    this.triggerRender();
   };
 
   private initializeImage = async (
