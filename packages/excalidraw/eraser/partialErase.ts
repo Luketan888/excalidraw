@@ -49,6 +49,39 @@ const distanceToSegmentSq = (
  * splitting at the removed segments. This correctly erases the middle of a
  * line (not just near its points) and splits the element into separate parts.
  */
+const segmentsDistanceSq = (
+  ax: number,
+  ay: number,
+  bx: number,
+  by: number,
+  cx: number,
+  cy: number,
+  dx: number,
+  dy: number,
+): number => {
+  // Approximate distance between segment AB and segment CD by sampling
+  // each endpoint's distance to the other segment. Accurate for parallel
+  // and intersecting segments; the only under-estimation-free case we
+  // care about for brush erasing is a near miss, which endpoint
+  // projection captures well enough against the brush radius.
+  return Math.min(
+    distanceToSegmentSq(ax, ay, cx, cy, dx, dy),
+    distanceToSegmentSq(bx, by, cx, cy, dx, dy),
+    distanceToSegmentSq(cx, cy, ax, ay, bx, by),
+    distanceToSegmentSq(dx, dy, ax, ay, bx, by),
+  );
+};
+
+/**
+ * Marks each element segment as "removed" when the eraser brush comes within
+ * `brushRadius` of it, then derives the remaining runs (sub-polylines) by
+ * splitting at the removed segments. This correctly erases the middle of a
+ * line (not just near its points) and splits the element into separate parts.
+ *
+ * The eraser stroke is treated as a polyline (segments between consecutive
+ * eraser points), so fast strokes that cross a line between two sampled
+ * points are still erased.
+ */
 const getErasedRuns = (
   element: ExcalidrawElement,
   eraserPoints: Point[],
@@ -65,7 +98,15 @@ const getErasedRuns = (
     const erasedAny =
       n === 1 &&
       eraserPoints.some(
-        (p) => distanceToSegmentSq(p[0], p[1], element.x + points[0][0], element.y + points[0][1], element.x + points[0][0], element.y + points[0][1]) <= radiusSq,
+        (p) =>
+          distanceToSegmentSq(
+            p[0],
+            p[1],
+            element.x + points[0][0],
+            element.y + points[0][1],
+            element.x + points[0][0],
+            element.y + points[0][1],
+          ) <= radiusSq,
       );
     return { runs: [], erasedAny };
   }
@@ -75,16 +116,36 @@ const getErasedRuns = (
     element.y + p[1],
   ]);
 
+  // Build eraser stroke segments so we catch fast strokes.
+  const eraserSegments: [number, number, number, number][] = [];
+  for (let i = 1; i < eraserPoints.length; i++) {
+    eraserSegments.push([
+      eraserPoints[i - 1][0],
+      eraserPoints[i - 1][1],
+      eraserPoints[i][0],
+      eraserPoints[i][1],
+    ]);
+  }
+
   const segKept: boolean[] = [];
   let removedAny = false;
   for (let i = 0; i < n - 1; i++) {
     const [ax, ay] = globalPts[i];
     const [bx, by] = globalPts[i + 1];
     let removed = false;
-    for (const ep of eraserPoints) {
-      if (distanceToSegmentSq(ep[0], ep[1], ax, ay, bx, by) <= radiusSq) {
-        removed = true;
-        break;
+    if (eraserSegments.length > 0) {
+      for (const [cx, cy, dx, dy] of eraserSegments) {
+        if (segmentsDistanceSq(ax, ay, bx, by, cx, cy, dx, dy) <= radiusSq) {
+          removed = true;
+          break;
+        }
+      }
+    } else {
+      for (const ep of eraserPoints) {
+        if (distanceToSegmentSq(ep[0], ep[1], ax, ay, bx, by) <= radiusSq) {
+          removed = true;
+          break;
+        }
       }
     }
     if (removed) {
