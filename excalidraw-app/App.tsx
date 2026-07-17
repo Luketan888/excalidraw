@@ -530,10 +530,12 @@ const ExcalidrawWrapper = () => {
         appState: {
           ...data.scene?.appState,
           // Drawthing brand defaults (applied only on first load; saved
-          // preferences in localStorage always take precedence)
+          // preferences in localStorage always take precedence).
+          // Grid is opt-in: off by default, toggleable via the canvas
+          // context menu ("Grid") or the grid canvas action.
           currentItemStrokeColor: "#e07b1e",
           currentItemStrokeWidthKey: "bold",
-          gridModeEnabled: true,
+          gridModeEnabled: false,
           gridSize: 20,
         },
       });
